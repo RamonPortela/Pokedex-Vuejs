@@ -10,16 +10,36 @@
     </div>
 
     <div class="holder" v-if="pokemon != null && !carregando">
-        <!--        <div>{{poke.name}}</div>
-                {{poke.types}}-->
         <div class="pokemon-detalhes">
-            <h1>{{pokemon.name}}</h1>
+            <h1>#{{pokemon.id}} - {{nomePokemon}}</h1>
             <img :src="poke.imgLink" :alt="pokemon.name">
         </div>
 
         <div class="div-tipo" :class="type.type.name" v-for="type in pokemon.types" v-if="type.type != null">
             {{type.type.name}}
         </div>
+
+        <div class="div-habilidades">
+            <h2>Habilidades</h2>
+            <table>
+                <tr v-for="habilidade in pokemon.abilities">
+                    <td>{{habilidade.ability.name}} <span v-show="habilidade.is_hidden">[hidden]</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!--<hr>-->
+
+        <div>
+            <h2>Status</h2>
+            <table>
+                <tr v-for="status in pokemon.stats">
+                    <td class="td-nome">{{status.stat.name}}</td>
+                    <td class="td-valor">{{status.base_stat}}</td>
+                </tr>
+            </table>
+        </div>
+
         <div>
             <button @click="voltar" class="btn-voltar">Voltar</button>
         </div>
@@ -47,6 +67,13 @@
                 this.$emit("voltar");
             }
         },
+
+        computed:{
+          nomePokemon(){
+              return this.pokemon.name.charAt(0).toUpperCase() + this.pokemon.name.substring(1);
+          }
+        },
+
         watch:{
             poke(){
                 if(this.poke == null){
@@ -61,10 +88,10 @@
                         function(response){
                             component.pokemon = response.data;
                             component.carregando = false;
+                            console.log(component.pokemon);
                         }
                     )
                 }
-
             }
         }
     }
@@ -75,10 +102,36 @@
         margin: 0;
     }
 
+    hr{
+        width: 255px;
+    }
+
+    tr{
+        border-bottom: 1px solid #adc2bf;
+        border-top: 1px solid #adc2bf;
+    }
+
+    table {
+        border-collapse: collapse;
+        margin:auto;
+        width: 255px;
+    }
+
+    .td-nome{
+        width: 150px;
+        text-align: left;
+    }
+
+    .td-valor{
+        text-align: center;
+    }
+
     .holder{
         background: white;
         padding: 15px;
         border-radius: 15px;
+        width: 300px;
+        margin: auto;
     }
 
     .div-tipo{
@@ -92,6 +145,7 @@
         display: inline-block;
         margin-left: 5px;
         cursor: default;
+        margin-top: 10px;
     }
 
     .pokemon-detalhes{
@@ -113,6 +167,10 @@
 
     .btn-voltar:hover{
         background: #3081bb;
+    }
+
+    .div-habilidades{
+        margin-top: 10px;
     }
 
     .fire{
