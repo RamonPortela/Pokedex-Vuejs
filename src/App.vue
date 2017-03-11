@@ -1,9 +1,13 @@
 <template>
   <div id="app">
+    <div v-show="!exibirDetalhes" class="pesquisa">
+      <input type="text" placeholder="pesquise um pokemon" v-model="pesquisa">
+    </div>
     <div v-show="!exibirDetalhes">
-      <pokemon-card v-for="pokemon in pokemons" :key="pokemon.id"
-                    :poke="pokemon" @click.native="selecionarPokemon(pokemon)"
-      ></pokemon-card>
+        <pokemon-card v-for="pokemon in listaFiltrada" :key="pokemon.id"
+                      :poke="pokemon" @click.native="selecionarPokemon(pokemon)"
+        ></pokemon-card>
+
     </div>
     <div v-show="exibirDetalhes">
       <detalhes :poke="pokemonSelecionado" @voltar="pokemonSelecionado = null"></detalhes>
@@ -21,7 +25,8 @@ export default {
   data () {
     return {
       pokemons: [],
-      pokemonSelecionado: null
+      pokemonSelecionado: null,
+      pesquisa: ''
     }
   },
   components: {
@@ -39,6 +44,9 @@ export default {
               return false;
           else
               return true;
+      },
+      listaFiltrada(){
+          return this.pokemons.filter((pok) => {return pok.name.includes(this.pesquisa)});
       }
   },
   created(){
@@ -63,10 +71,7 @@ export default {
             }
         )
     }
-  },
-    destroyed(){
-      console.log("I was destryoed");
-    }
+  }
 }
 </script>
 
@@ -81,7 +86,8 @@ export default {
   margin-left: auto;
   margin-right: auto;
   width: 85%;
-  background-color: lightgray;
+  background-color: transparent;
+  padding: 10px 0 10px 0;
 }
 
 h1, h2 {
@@ -104,5 +110,8 @@ a {
 
 body{
   background: #f1f1f1;
+}
+.pesquisa{
+  margin-bottom: 20px;
 }
 </style>
