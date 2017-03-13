@@ -7,6 +7,9 @@
         <pokemon-card v-for="pokemon in listaFiltrada" :key="pokemon.id"
                       :poke="pokemon" @click.native="selecionarPokemon(pokemon)"
         ></pokemon-card>
+        <div v-if="listaFiltrada.length == 0">
+          <h4>Nenhum pokemon encontrado.</h4>
+        </div>
 
     </div>
     <div v-show="exibirDetalhes">
@@ -46,7 +49,7 @@ export default {
               return true;
       },
       listaFiltrada(){
-          return this.pokemons.filter((pok) => {return pok.name.includes(this.pesquisa)});
+          return this.pokemons.filter((pok) => {return pok.name.includes(this.pesquisa) || pok.id == this.pesquisa});
       }
   },
   created(){

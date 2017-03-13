@@ -11,7 +11,7 @@
 
     <div class="holder" v-if="pokemon != null && !carregando">
         <div class="pokemon-detalhes">
-            <h1>#{{pokemon.id}} - {{nomePokemon}}</h1>
+            <h1>#{{pokemon.id}} - {{pokemon.name | FiltroNome}}</h1>
             <img :src="poke.imgLink" :alt="pokemon.name">
         </div>
 
@@ -85,11 +85,7 @@
         },
 
         computed:{
-          nomePokemon(){
-              return this.pokemon.name.charAt(0).toUpperCase() + this.pokemon.name.substring(1);
-          },
-
-          locais(){
+        locais(){
               let vetor = this.encontrado.filter((local) => {
 
                 if((local.location_area.name.includes('kanto')) || local.location_area.name.includes('sinnoh') || local.location_area.name.includes('johto') || local.location_area.name.includes('kalos')
@@ -188,6 +184,8 @@
         border-radius: 15px;
         width: 300px;
         margin: auto;
+        border: 1px solid black;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
     }
 
     .div-tipo{

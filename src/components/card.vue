@@ -4,12 +4,13 @@
             <img class="card-img" :src="imgLink"/>
         </div>
         <div>
-            <h4>{{name}}</h4>
+            <h4>{{name | FiltroNome}}</h4>
         </div>
     </div>
 </template>
 <script>
     const link = "http://www.pokestadium.com/sprites/xy/";
+    const linkSpecialPikachu = "http://www.pokestadium.com/sprites/xy-fan/";
 
     export default{
         data(){
@@ -32,7 +33,63 @@
             }
         },
         mounted(){
-            this.imgLink = link + this.poke.name + ".gif"
+
+            if(this.poke.name.includes("-x") || this.poke.name.includes("-y")){
+                this.poke.name = this.poke.name.replace("-x", "x");
+                this.poke.name = this.poke.name.replace("-y", "y");
+            }
+
+            if(this.poke.name.includes("pikachu") && this.poke.name.length > "pikachu".length){
+                this.imgLink = linkSpecialPikachu + this.poke.name + ".png";
+            }
+
+            switch(this.poke.name){
+                case "giratina-altered":
+                    this.poke.name = "giratina";
+                    break;
+                case "deoxys-normal":
+                    this.poke.name = "deoxys";
+                    break;
+                case "wormadam-plant":
+                    this.poke.name = "wormadam"
+                    break;
+                case "basculin-red-striped":
+                    this.poke.name = "basculin";
+                    break;
+                case "basculin-blue-striped":
+                    this.poke.name = "basculin-blue";
+                    break;
+                case "shaymin-land":
+                    this.poke.name = "shaymin";
+                    break;
+                case "darmanitan-standard":
+                    this.poke.name = "darmanitan";
+                    break;
+                case "tornadus-incarnate":
+                    this.poke.name = "tornadus";
+                    break;
+                case "thundurus-incarnate":
+                    this.poke.name = "thundurus";
+                    break;
+                case "landorus-incarnate":
+                    this.poke.name = "landorus";
+                    break;
+                case "keldeo-ordinary":
+                    this.poke.name = "keldeo";
+                    break;
+                case "meloetta-aria":
+                    this.poke.name = "meloetta";
+                    break;
+                case "meowstic-male":
+                    this.poke.name = "meowstic";
+                    break;
+                case "aegislash-shield":
+                    this.poke.name = "aegislash";
+                    break;
+            }
+
+            this.imgLink = link + this.poke.name + ".gif";
+
             this.poke.imgLink = this.imgLink;
         }
     }
