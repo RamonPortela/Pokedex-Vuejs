@@ -9,52 +9,89 @@
         <div class="div-carregando"><p>Carregando...</p></div>
     </div>
 
-    <div class="holder" v-if="pokemon != null && !carregando">
-        <div class="pokemon-detalhes">
-            <h1>#{{pokemon.id}} - {{pokemon.name | FiltroNome}}</h1>
-            <img :src="poke.imgLink" :alt="pokemon.name">
+    <div class="holder container" v-if="pokemon != null && !carregando">
+        <div class="row">
+            <div class="col-md-4 col-xs-12">
+                <div class="pokemon-detalhes">
+                    <h1>#{{pokemon.id}} - {{pokemon.name | FiltroNome}}</h1>
+                    <img :src="poke.imgLink" :alt="pokemon.name">
+                </div>
+
+                <div class="div-tipo" :class="type.type.name" v-for="type in pokemon.types" v-if="type.type != null">
+                    {{type.type.name}}
+                </div>
+            </div>
+
+            <div class="col-md-8 col-xs-12">
+                <div class="div-informacoes">
+                    <h2>Informações</h2>
+                    <table>
+                        <tr>
+                            <td>peso: {{peso}}</td>
+                        </tr>
+                        <tr>
+                            <td>altura: {{altura}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <div class="div-tipo" :class="type.type.name" v-for="type in pokemon.types" v-if="type.type != null">
-            {{type.type.name}}
+        <div class="row">
+            <div class="col-md-4 col-xs-12">
+                <div>
+                    <h2>Habilidades</h2>
+                    <table>
+                        <tr v-for="habilidade in pokemon.abilities">
+                            <td>{{habilidade.ability.name | FiltroNome}} <span v-show="habilidade.is_hidden">[hidden]</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <div>
+                    <h2>Status</h2>
+                    <table>
+                        <tr v-for="status in pokemon.stats">
+                            <td class="td-nome">{{status.stat.name | FiltroNome}}</td>
+                            <td class="td-valor">{{status.base_stat}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <div>
+                    <h2>Encontrado Em</h2>
+                    <div id="pikachu" v-if="carregandoLocal"></div>
+                    <div id="ash" v-if="carregandoLocal"></div>
+
+                    <table v-else>
+                        <tr v-for="local in locais">
+                            <td>{{local | FiltroNome}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <div class="div-habilidades">
-            <h2>Habilidades</h2>
-            <table>
-                <tr v-for="habilidade in pokemon.abilities">
-                    <td>{{habilidade.ability.name}} <span v-show="habilidade.is_hidden">[hidden]</span></td>
-                </tr>
-            </table>
+        <div class="row">
+            <div class="col-md-12">
+                <div v-if="mostrar">
+                    <h2>Evoluções</h2>
+                    <table>
+                        <th class="td-nome">Evolução</th>
+                        <th class="td-valor">Level</th>
+
+                        <tr v-for="evolucao of pokemon.evolucoes" @click="">
+                            <td class="td-nome"><img :src="link+evolucao.nome+'.gif'" alt=""><br>{{evolucao.nome}}</td>
+                            <td class="td-valor">{{evolucao.level}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <!--<hr>-->
-
-        <div>
-            <h2>Status</h2>
-            <table>
-                <tr v-for="status in pokemon.stats">
-                    <td class="td-nome">{{status.stat.name}}</td>
-                    <td class="td-valor">{{status.base_stat}}</td>
-                </tr>
-            </table>
-        </div>
-
-        <div>
-            <h2>Encontrado Em</h2>
-
-
-            <div id="pikachu" v-if="carregandoLocal"></div>
-            <div id="ash" v-if="carregandoLocal"></div>
-
-            <table v-else>
-                <tr v-for="local in locais">
-                    <td>{{local}}</td>
-                </tr>
-            </table>
-        </div>
-
-        <div>
+        <div class="row">
             <button @click="voltar" class="btn-voltar">Voltar</button>
         </div>
     </div>
@@ -70,7 +107,9 @@
                 pokemon: null,
                 encontrado: null,
                 carregando: false,
-                carregandoLocal: false
+                carregandoLocal: false,
+                mostrar: false,
+                link: "http://www.pokestadium.com/sprites/xy/"
             }
         },
         props:{
@@ -81,6 +120,24 @@
         methods:{
             voltar(){
                 this.$emit("voltar");
+            },
+            PreencherEvolucoes(evolucao){
+
+                let nivel;
+
+                if(evolucao.evolution_details[0] != null){
+                    nivel = evolucao.evolution_details[0].min_level;
+                }
+                else{
+                    nivel = "Inicial";
+                }
+
+                this.pokemon.evolucoes.push({nome: evolucao.species.name, level: nivel});
+                if(evolucao.evolves_to.length > 0){
+                    let evol = evolucao.evolves_to[0];
+                    this.PreencherEvolucoes(evol);
+                }
+                this.mostrar = true;
             }
         },
 
@@ -117,6 +174,14 @@
               }
 
               return vetorLocais;
+          },
+
+          altura(){
+              return (this.pokemon.height / 10) + "m";
+          },
+
+          peso(){
+              return (this.pokemon.weight / 10) + "kg";
           }
         },
 
@@ -129,15 +194,28 @@
                     let component = this;
 
                     this.carregando = true;
+                    this.mostrar = false;
 
-                    axios.get('http://pokeapi.co/api/v2/pokemon/' + this.poke.id).then(
+                    axios.get(this.poke.url).then(
                         function(response){
                             component.pokemon = response.data;
+                            component.pokemon.evolucoes = [];
                             component.carregandoLocal = true;
 
-                            axios.get('http://pokeapi.co'+component.pokemon.location_area_encounters).then(function (resp) {
+                            axios.get('http://pokeapi.co/'+component.pokemon.location_area_encounters).then(function (resp) {
                                 component.encontrado = resp.data;
                                 component.carregandoLocal = false;
+                            });
+
+                            axios.get('http://pokeapi.co/api/v2/pokemon-species/' + component.pokemon.id).then(function(resp){
+                                component.pokemon.especie = resp.data;
+                                
+                                axios.get(component.pokemon.especie.evolution_chain.url).then(function(r){
+                                    component.pokemon.detalhes_evolucao = r.data;
+                                    component.pokemon.evolucoes = [];
+                                    component.PreencherEvolucoes(component.pokemon.detalhes_evolucao.chain);
+                                });
+
                             });
 
                             component.carregando = false;
@@ -163,14 +241,18 @@
         border-top: 1px solid #adc2bf;
     }
 
+    th{
+        width: 100%
+    }
+
     table {
         border-collapse: collapse;
         margin:auto;
-        width: 255px;
+        width: 100%;
     }
 
     .td-nome{
-        width: 150px;
+        width: 65%;
         text-align: left;
     }
 
@@ -182,7 +264,6 @@
         background: white;
         padding: 15px;
         border-radius: 15px;
-        width: 300px;
         margin: auto;
         border: 1px solid black;
         box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
@@ -223,7 +304,7 @@
         background: #3081bb;
     }
 
-    .div-habilidades{
+    .div-informacoes{
         margin-top: 10px;
     }
 

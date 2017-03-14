@@ -1,20 +1,25 @@
 <template>
   <div id="app">
-    <div v-show="!exibirDetalhes" class="pesquisa">
-      <input type="text" placeholder="pesquise um pokemon" v-model="pesquisa">
-    </div>
-    <div v-show="!exibirDetalhes">
-        <pokemon-card v-for="pokemon in listaFiltrada" :key="pokemon.id"
-                      :poke="pokemon" @click.native="selecionarPokemon(pokemon)"
-        ></pokemon-card>
-        <div v-if="listaFiltrada.length == 0">
-          <h4>Nenhum pokemon encontrado.</h4>
+    <div class="container">
+        <div v-show="!exibirDetalhes" class="pesquisa row ">
+            <div class="col-sm-4 col-sm-offset-4">
+                <input class="form-control" type="text" placeholder="pesquise um pokemon" v-model="pesquisa">
+            </div>
         </div>
+        <div class="row" v-show="!exibirDetalhes">
+            <pokemon-card v-for="pokemon in listaFiltrada" :key="pokemon.id"
+                          :poke="pokemon" @click.native="selecionarPokemon(pokemon)"
+            ></pokemon-card>
+            <div v-if="listaFiltrada.length == 0">
+                <h4>Nenhum pokemon encontrado.</h4>
+            </div>
 
+        </div>
+        <div v-show="exibirDetalhes">
+            <detalhes :poke="pokemonSelecionado" @voltar="pokemonSelecionado = null"></detalhes>
+        </div>
     </div>
-    <div v-show="exibirDetalhes">
-      <detalhes :poke="pokemonSelecionado" @voltar="pokemonSelecionado = null"></detalhes>
-    </div>
+
   </div>
 </template>
 
@@ -29,7 +34,9 @@ export default {
     return {
       pokemons: [],
       pokemonSelecionado: null,
-      pesquisa: ''
+      pesquisa: '',
+      tipos: {},
+        pronto: false
     }
   },
   components: {
@@ -49,7 +56,144 @@ export default {
               return true;
       },
       listaFiltrada(){
-          return this.pokemons.filter((pok) => {return pok.name.includes(this.pesquisa) || pok.id == this.pesquisa});
+          let retorno = [];
+          switch (this.pesquisa.toLowerCase()){
+              case "bug":
+              case "inseto":
+                  for(let pokemon of this.tipos.bug.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "fire":
+              case "fogo":
+                  for(let pokemon of this.tipos.fire.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                    break;
+              case "water":
+              case "agua":
+              case "água":
+                  for(let pokemon of this.tipos.water.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "normal":
+                  for(let pokemon of this.tipos.normal.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "fighting":
+              case "lutador":
+                  for(let pokemon of this.tipos.fighting.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "grass":
+              case "planta":
+                  for(let pokemon of this.tipos.grass.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "poison":
+              case "venenoso":
+                  for(let pokemon of this.tipos.poison.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "electric":
+              case "elétrico":
+              case "eletrico":
+                  for(let pokemon of this.tipos.electric.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "ground":
+              case "terra":
+                  for(let pokemon of this.tipos.ground.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "psychic":
+              case "psíquico":
+              case "psiquico":
+                  for(let pokemon of this.tipos.psychic.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "rock":
+              case "pedra":
+                  for(let pokemon of this.tipos.rock.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "flying":
+              case "voador":
+                  for(let pokemon of this.tipos.flying.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "ghost":
+              case "fantasma":
+                  for(let pokemon of this.tipos.ghost.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "ice":
+              case "gelo":
+                  for(let pokemon of this.tipos.ice.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "dragon":
+              case "dragão":
+              case "dragao":
+                  for(let pokemon of this.tipos.dragon.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "steel":
+              case "metálico":
+              case "metalico":
+                  for(let pokemon of this.tipos.steel.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "dark":
+              case "noturno":
+                  for(let pokemon of this.tipos.dark.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+              case "fairy":
+              case "fada":
+                  for(let pokemon of this.tipos.fairy.pokemon){
+                      retorno.push(pokemon.pokemon);
+                  }
+                  return retorno;
+                  break;
+          }
+
+          return this.pokemons.filter((pok) =>
+              {
+                  return pok.name.includes(this.pesquisa) || pok.id == this.pesquisa
+              });
       }
   },
   created(){
@@ -63,7 +207,6 @@ export default {
     }
 
     if(this.pokemons.length == 0){
-        console.log("got here");
         axios.get('http://pokeapi.co/api/v2/pokemon/?limit=900').then(
             function(response){
                 let pokemon;
@@ -72,7 +215,23 @@ export default {
                     app.pokemons.push(pokemon);
                 }
             }
-        )
+        );
+
+        this.pronto = false;
+
+
+        axios.get('http://pokeapi.co/api/v2/type').then(
+            function (response) {
+                for(let type of response.data.results){
+                    axios.get(type.url).then(
+                        function(resp){
+                            app.tipos[resp.data.name] = resp.data;
+                            app.pronto = true;
+                        }
+                    );
+                }
+            }
+        );
     }
   }
 }

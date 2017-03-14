@@ -1,5 +1,5 @@
-<template>  
-    <div class="card">
+<template>
+    <div class="card col-md-2 col-xs-12 col-sm-3">
         <div>
             <img class="card-img" :src="imgLink"/>
         </div>
@@ -8,6 +8,7 @@
         </div>
     </div>
 </template>
+
 <script>
     const link = "http://www.pokestadium.com/sprites/xy/";
     const linkSpecialPikachu = "http://www.pokestadium.com/sprites/xy-fan/";
@@ -37,11 +38,7 @@
             if(this.poke.name.includes("-x") || this.poke.name.includes("-y")){
                 this.poke.name = this.poke.name.replace("-x", "x");
                 this.poke.name = this.poke.name.replace("-y", "y");
-            }
-
-            if(this.poke.name.includes("pikachu") && this.poke.name.length > "pikachu".length){
-                this.imgLink = linkSpecialPikachu + this.poke.name + ".png";
-            }
+            }            
 
             switch(this.poke.name){
                 case "giratina-altered":
@@ -89,6 +86,10 @@
             }
 
             this.imgLink = link + this.poke.name + ".gif";
+            
+            if(this.poke.name.includes("pikachu") && this.poke.name.length > "pikachu".length){
+                this.imgLink = linkSpecialPikachu + this.poke.name + ".png";
+            }            
 
             this.poke.imgLink = this.imgLink;
         }
@@ -101,7 +102,6 @@
         border: 1px black solid;
         border-radius: 10px;
         padding: 15px;
-        width: 15%;
         margin: 0px 0 20px 2.5%;
         background-color: white;
         box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
