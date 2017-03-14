@@ -1,6 +1,6 @@
 # pokedex
 
-> A Vue.js project
+> Uma pokedex simples feita com vuejs e utilizando a poke api
 
 ## Build Setup
 
