@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="position: absolute">
     <div id="loading" v-if="carregando">
         <div class="pokeball" id="normal"></div>
         <div class="pokeball" id="great"></div>
@@ -76,9 +76,14 @@
 
         <div class="row">
             <div class="col-md-12">
-                <div v-if="mostrar">
+                <div>
                     <h2>Evoluções</h2>
-                    <table>
+                    <div id='h' v-if="carregandoEvolucoes">
+                        <div id='a'></div>
+                        <div id='m'></div>
+                        <div id='l'></div>
+                    </div>
+                    <table v-else>
                         <th class="td-nome">Evolução</th>
                         <th class="td-valor">Level</th>
 
@@ -108,8 +113,8 @@
                 encontrado: null,
                 carregando: false,
                 carregandoLocal: false,
-                mostrar: false,
-                link: "http://www.pokestadium.com/sprites/xy/"
+                carregandoEvolucoes: false,
+                link: "https://www.pkparaiso.com/imagenes/xy/sprites/animados/"
             }
         },
         props:{
@@ -120,6 +125,7 @@
         methods:{
             voltar(){
                 this.$emit("voltar");
+                this.$destroy();
             },
             PreencherEvolucoes(evolucao){
 
@@ -137,7 +143,7 @@
                     let evol = evolucao.evolves_to[0];
                     this.PreencherEvolucoes(evol);
                 }
-                this.mostrar = true;
+                this.carregandoEvolucoes = false;
             }
         },
 
@@ -185,43 +191,41 @@
           }
         },
 
-        watch:{
-            poke(){
-                if(this.poke == null){
-                    this.pokemon = null;
-                }
-                else{
-                    let component = this;
+        created(){
+            if(this.poke == null){
+                this.pokemon = null;
+            }
+            else{
+                let component = this;
 
-                    this.carregando = true;
-                    this.mostrar = false;
+                this.carregando = true;
+                this.carregandoEvolucoes = true;
 
-                    axios.get(this.poke.url).then(
-                        function(response){
-                            component.pokemon = response.data;
-                            component.pokemon.evolucoes = [];
-                            component.carregandoLocal = true;
+                axios.get(this.poke.url).then(
+                    function(response){
+                        component.pokemon = response.data;
+                        component.pokemon.evolucoes = [];
+                        component.carregandoLocal = true;
 
-                            axios.get('http://pokeapi.co/'+component.pokemon.location_area_encounters).then(function (resp) {
-                                component.encontrado = resp.data;
-                                component.carregandoLocal = false;
+                        axios.get('http://pokeapi.co/'+component.pokemon.location_area_encounters).then(function (resp) {
+                            component.encontrado = resp.data;
+                            component.carregandoLocal = false;
+                        });
+
+                        axios.get('http://pokeapi.co/api/v2/pokemon-species/' + component.pokemon.id).then(function(resp){
+                            component.pokemon.especie = resp.data;
+
+                            axios.get(component.pokemon.especie.evolution_chain.url).then(function(r){
+                                component.pokemon.detalhes_evolucao = r.data;
+                                component.pokemon.evolucoes = [];
+                                component.PreencherEvolucoes(component.pokemon.detalhes_evolucao.chain);
                             });
 
-                            axios.get('http://pokeapi.co/api/v2/pokemon-species/' + component.pokemon.id).then(function(resp){
-                                component.pokemon.especie = resp.data;
-                                
-                                axios.get(component.pokemon.especie.evolution_chain.url).then(function(r){
-                                    component.pokemon.detalhes_evolucao = r.data;
-                                    component.pokemon.evolucoes = [];
-                                    component.PreencherEvolucoes(component.pokemon.detalhes_evolucao.chain);
-                                });
+                        });
 
-                            });
-
-                            component.carregando = false;
-                        }
-                    )
-                }
+                        component.carregando = false;
+                    }
+                )
             }
         }
     }
@@ -363,78 +367,6 @@
         background-color: #ffb0c5;
     }
 
-    @keyframes rotateBall {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-    @-webkit-keyframes rotateBall {
-        0% {
-            transform: rotate(0deg);
-        }
-        50% {
-            transform: rotate(50deg);
-        }
-        0% {
-            transform: rotate(360deg);
-        }
-    }
-
-    .div-carregando{
-        top: 80%;
-        text-align: center;
-        position: absolute;
-        left: 35%;
-    }
-
-    #loading {
-        height: 48px;
-        width: 264px;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50%);
-    }
-
-    .pokeball {
-        width: 4px;
-        height: 4px;
-        transform-origin: 24px 24px;
-        animation: rotateBall 1.5s infinite forwards;
-    }
-    .pokeball#normal {
-        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #e20f07, 20px 4px 0 #e20f07, 24px 4px 0 #e20f07, 28px 4px 0 #e20f07, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #e20f07, 12px 8px 0 #e20f07, 16px 8px 0 #FFF, 20px 8px 0 #e20f07, 24px 8px 0 #e20f07, 28px 8px 0 #e20f07, 32px 8px 0 #e20f07, 36px 8px 0 #e20f07, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #e20f07, 12px 12px 0 #FFF, 16px 12px 0 #FFF, 20px 12px 0 #FFF, 24px 12px 0 #e20f07, 28px 12px 0 #e20f07, 32px 12px 0 #e20f07, 36px 12px 0 #e20f07, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #e20f07, 8px 16px 0 #e20f07, 12px 16px 0 #e20f07, 16px 16px 0 #FFF, 20px 16px 0 #e20f07, 24px 16px 0 #e20f07, 28px 16px 0 #e20f07, 32px 16px 0 #e20f07, 36px 16px 0 #e20f07, 40px 16px 0 #e20f07, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #e20f07, 8px 20px 0 #e20f07, 12px 20px 0 #e20f07, 16px 20px 0 #e20f07, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #e20f07, 32px 20px 0 #e20f07, 36px 20px 0 #e20f07, 40px 20px 0 #e20f07, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #e20f07, 12px 24px 0 #e20f07, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #e20f07, 36px 24px 0 #e20f07, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
-    }
-    .pokeball#great {
-        animation-delay: 0.25s;
-        margin: -4px 0 0 54px;
-        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #278de1, 20px 4px 0 #278de1, 24px 4px 0 #278de1, 28px 4px 0 #278de1, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #e20f07, 12px 8px 0 #e20f07, 16px 8px 0 #278de1, 20px 8px 0 #278de1, 24px 8px 0 #278de1, 28px 8px 0 #278de1, 32px 8px 0 #e20f07, 36px 8px 0 #e20f07, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #e20f07, 12px 12px 0 #e20f07, 16px 12px 0 #e20f07, 20px 12px 0 #278de1, 24px 12px 0 #278de1, 28px 12px 0 #e20f07, 32px 12px 0 #e20f07, 36px 12px 0 #e20f07, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #278de1, 8px 16px 0 #278de1, 12px 16px 0 #e20f07, 16px 16px 0 #e20f07, 20px 16px 0 #278de1, 24px 16px 0 #278de1, 28px 16px 0 #e20f07, 32px 16px 0 #e20f07, 36px 16px 0 #278de1, 40px 16px 0 #278de1, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #278de1, 8px 20px 0 #278de1, 12px 20px 0 #278de1, 16px 20px 0 #278de1, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #278de1, 32px 20px 0 #278de1, 36px 20px 0 #278de1, 40px 20px 0 #278de1, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #278de1, 12px 24px 0 #278de1, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #278de1, 36px 24px 0 #278de1, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
-    }
-    .pokeball#ultra {
-        animation-delay: 0.5s;
-        margin: -4px 0 0 108px;
-        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #ffff00, 20px 4px 0 #ffff00, 24px 4px 0 #ffff00, 28px 4px 0 #ffff00, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #ffff00, 12px 8px 0 #ffff00, 16px 8px 0 #ffff00, 20px 8px 0 #ffff00, 24px 8px 0 #ffff00, 28px 8px 0 #ffff00, 32px 8px 0 #ffff00, 36px 8px 0 #ffff00, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #ffff00, 12px 12px 0 #ffff00, 16px 12px 0 #000, 20px 12px 0 #000, 24px 12px 0 #000, 28px 12px 0 #000, 32px 12px 0 #ffff00, 36px 12px 0 #ffff00, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #000, 8px 16px 0 #ffff00, 12px 16px 0 #ffff00, 16px 16px 0 #000, 20px 16px 0 #000, 24px 16px 0 #000, 28px 16px 0 #000, 32px 16px 0 #ffff00, 36px 16px 0 #ffff00, 40px 16px 0 #000, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #000, 8px 20px 0 #000, 12px 20px 0 #000, 16px 20px 0 #000, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #000, 32px 20px 0 #000, 36px 20px 0 #000, 40px 20px 0 #000, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #000, 12px 24px 0 #000, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #000, 36px 24px 0 #000, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
-    }
-    .pokeball#master {
-        animation-delay: 0.75s;
-        margin: -4px 0 0 162px;
-        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #481a66, 20px 4px 0 #481a66, 24px 4px 0 #481a66, 28px 4px 0 #481a66, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #eb23aa, 12px 8px 0 #eb23aa, 16px 8px 0 #481a66, 20px 8px 0 #481a66, 24px 8px 0 #481a66, 28px 8px 0 #481a66, 32px 8px 0 #eb23aa, 36px 8px 0 #eb23aa, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #eb23aa, 12px 12px 0 #FFF, 16px 12px 0 #FFF, 20px 12px 0 #481a66, 24px 12px 0 #481a66, 28px 12px 0 #FFF, 32px 12px 0 #FFF, 36px 12px 0 #eb23aa, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #481a66, 8px 16px 0 #481a66, 12px 16px 0 #FFF, 16px 16px 0 #481a66, 20px 16px 0 #FFF, 24px 16px 0 #FFF, 28px 16px 0 #481a66, 32px 16px 0 #FFF, 36px 16px 0 #481a66, 40px 16px 0 #481a66, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #481a66, 8px 20px 0 #481a66, 12px 20px 0 #481a66, 16px 20px 0 #481a66, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #481a66, 32px 20px 0 #481a66, 36px 20px 0 #481a66, 40px 20px 0 #481a66, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #481a66, 12px 24px 0 #481a66, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #481a66, 36px 24px 0 #481a66, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
-    }
-    .pokeball#safari {
-        animation-delay: 1s;
-        margin: -4px 0 0 216px;
-        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #9a4a01, 20px 4px 0 #9a4a01, 24px 4px 0 #606700, 28px 4px 0 #5fa300, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #606700, 12px 8px 0 #606700, 16px 8px 0 #606700, 20px 8px 0 #9a4a01, 24px 8px 0 #9a4a01, 28px 8px 0 #5fa300, 32px 8px 0 #606700, 36px 8px 0 #9a4a01, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #9a4a01, 12px 12px 0 #9a4a01, 16px 12px 0 #9a4a01, 20px 12px 0 #9a4a01, 24px 12px 0 #9a4a01, 28px 12px 0 #5fa300, 32px 12px 0 #606700, 36px 12px 0 #606700, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #5fa300, 8px 16px 0 #606700, 12px 16px 0 #5fa300, 16px 16px 0 #5fa300, 20px 16px 0 #606700, 24px 16px 0 #606700, 28px 16px 0 #606700, 32px 16px 0 #5fa300, 36px 16px 0 #9a4a01, 40px 16px 0 #9a4a01, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #5fa300, 8px 20px 0 #606700, 12px 20px 0 #5fa300, 16px 20px 0 #606700, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #606700, 32px 20px 0 #606700, 36px 20px 0 #5fa300, 40px 20px 0 #5fa300, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #606700, 12px 24px 0 #606700, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #9a4a01, 36px 24px 0 #9a4a01, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
-    }
-
-
-
-
-
-
-
-
     /* Black and white, like the old days */
     /* In HD colors ;) */
     /*
@@ -562,6 +494,90 @@
             margin-left: 120px;
         }
     }
+
+
+#h {
+  position: relative;
+  width: 81.66667px;
+  margin: 100px auto;
+  transform: rotate(45deg);
+  top: -65px;
+  left: 25px;
+}
+#h #a {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-width: 11.66667px;
+  border-color: #6ab071;
+  border-style: solid;
+  border-radius: 70px;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+  animation: goa 2s 0.5s linear infinite;
+}
+#h #m {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  border-width: 11.66667px;
+  border-color: #b2dea6;
+  border-style: solid;
+  border-radius: 70px;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+  top: 17.5px;
+  left: 17.5px;
+  animation: gom 2s linear infinite;
+}
+#h #l {
+    position: absolute;
+    width: 0;
+    height: 0;
+    background: red;
+    border-width: 6.66667px;
+    border-color: #e0f1db;
+    border-style: solid;
+    border-radius: 70px;
+    top: 28px;
+    left: 28px;
+}
+
+@keyframes goa {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-180deg);
+  }
+  50% {
+    transform: rotate(-180deg);
+  }
+  75% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes gom {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(180deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 
 
 </style>

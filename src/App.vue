@@ -1,51 +1,42 @@
 <template>
   <div id="app">
-    <div class="container">
-        <div v-show="!exibirDetalhes" class="pesquisa row ">
-            <div class="col-sm-4 col-sm-offset-4">
-                <input class="form-control" type="text" placeholder="pesquise um pokemon" v-model="pesquisa">
-            </div>
-        </div>
-        <div class="row" v-show="!exibirDetalhes">
-            <pokemon-card v-for="pokemon in listaFiltrada" :key="pokemon.id"
-                          :poke="pokemon" @click.native="selecionarPokemon(pokemon)"
-            ></pokemon-card>
-            <div v-if="listaFiltrada.length == 0">
-                <h4>Nenhum pokemon encontrado.</h4>
-            </div>
+      <div class="container">
+          <keep-alive>
+              <transition name="trocar" mode="out-in">
+                  <component :is="paginaAtual" :poke="pokemonSelecionado" @selecionarPokemon="selecionarPokemon($event)" @voltar="voltar">
 
-        </div>
-        <div v-show="exibirDetalhes">
-            <detalhes :poke="pokemonSelecionado" @voltar="pokemonSelecionado = null"></detalhes>
-        </div>
-    </div>
-
+                  </component>
+              </transition>
+          </keep-alive>
+      </div>
   </div>
 </template>
 
 <script>
-let axios = require('axios');
-import pokemonCard from './components/card.vue';
+import lista from './components/lista.vue';
 import detalhes from './components/detalhes.vue';
 
 export default {
   name: 'app',
   data () {
     return {
-      pokemons: [],
       pokemonSelecionado: null,
-      pesquisa: '',
-      tipos: {},
-        pronto: false
+      pronto: false,
+      paginaAtual: 'lista'
     }
   },
   components: {
-    'pokemon-card': pokemonCard,
+    'lista': lista,
     'detalhes': detalhes
   },
   methods:{
       selecionarPokemon(pokemon){
         this.pokemonSelecionado = pokemon;
+        this.paginaAtual = 'detalhes';
+      },
+      voltar(){
+          this.pokemonSelecionado = null;
+          this.paginaAtual = 'lista';
       }
   },
   computed:{
@@ -54,191 +45,39 @@ export default {
               return false;
           else
               return true;
-      },
-      listaFiltrada(){
-          let retorno = [];
-          switch (this.pesquisa.toLowerCase()){
-              case "bug":
-              case "inseto":
-                  for(let pokemon of this.tipos.bug.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "fire":
-              case "fogo":
-                  for(let pokemon of this.tipos.fire.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                    break;
-              case "water":
-              case "agua":
-              case "água":
-                  for(let pokemon of this.tipos.water.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "normal":
-                  for(let pokemon of this.tipos.normal.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "fighting":
-              case "lutador":
-                  for(let pokemon of this.tipos.fighting.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "grass":
-              case "planta":
-                  for(let pokemon of this.tipos.grass.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "poison":
-              case "venenoso":
-                  for(let pokemon of this.tipos.poison.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "electric":
-              case "elétrico":
-              case "eletrico":
-                  for(let pokemon of this.tipos.electric.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "ground":
-              case "terra":
-                  for(let pokemon of this.tipos.ground.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "psychic":
-              case "psíquico":
-              case "psiquico":
-                  for(let pokemon of this.tipos.psychic.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "rock":
-              case "pedra":
-                  for(let pokemon of this.tipos.rock.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "flying":
-              case "voador":
-                  for(let pokemon of this.tipos.flying.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "ghost":
-              case "fantasma":
-                  for(let pokemon of this.tipos.ghost.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "ice":
-              case "gelo":
-                  for(let pokemon of this.tipos.ice.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "dragon":
-              case "dragão":
-              case "dragao":
-                  for(let pokemon of this.tipos.dragon.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "steel":
-              case "metálico":
-              case "metalico":
-                  for(let pokemon of this.tipos.steel.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "dark":
-              case "noturno":
-                  for(let pokemon of this.tipos.dark.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-              case "fairy":
-              case "fada":
-                  for(let pokemon of this.tipos.fairy.pokemon){
-                      retorno.push(pokemon.pokemon);
-                  }
-                  return retorno;
-                  break;
-          }
-
-          return this.pokemons.filter((pok) =>
-              {
-                  return pok.name.includes(this.pesquisa) || pok.id == this.pesquisa
-              });
       }
-  },
-  created(){
-    let app = this;
-
-    function getId(url){
-      let id;
-      id = url.substring(33);
-      id = id.substring(0, id.length - 1);
-      return parseInt(id);
-    }
-
-    if(this.pokemons.length == 0){
-        axios.get('http://pokeapi.co/api/v2/pokemon/?limit=900').then(
-            function(response){
-                let pokemon;
-                for(pokemon of response.data.results){
-                    pokemon.id = getId(pokemon.url);
-                    app.pokemons.push(pokemon);
-                }
-            }
-        );
-
-        this.pronto = false;
-
-
-        axios.get('http://pokeapi.co/api/v2/type').then(
-            function (response) {
-                for(let type of response.data.results){
-                    axios.get(type.url).then(
-                        function(resp){
-                            app.tipos[resp.data.name] = resp.data;
-                            app.pronto = true;
-                        }
-                    );
-                }
-            }
-        );
-    }
   }
 }
 </script>
 
 <style>
+    .trocar-enter{
+        animation: slide-in 2s;
+    }
+    .trocar-leave-to{
+        animation: slide-out 2s;
+    }
+
+    @keyframes slide-in{
+        0%{
+        }
+        100%{
+            top:-100%;
+        }
+    }
+
+    @keyframes slide-out{
+        0%{
+            top:500%
+        }
+        100%{
+
+        }
+    }
+
+
 #app {
+
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -276,4 +115,70 @@ body{
 .pesquisa{
   margin-bottom: 20px;
 }
+
+
+    @keyframes rotateBall {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    @-webkit-keyframes rotateBall {
+        0% {
+            transform: rotate(0deg);
+        }
+        50% {
+            transform: rotate(50deg);
+        }
+        0% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .div-carregando{
+        top: 50px;
+        text-align: center;
+        position: absolute;
+        left: 35%;
+    }
+
+    #loading {
+        height: 48px;
+        width: 264px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+    }
+
+    .pokeball {
+        width: 4px;
+        height: 4px;
+        transform-origin: 24px 24px;
+        animation: rotateBall 1.5s infinite forwards;
+    }
+    .pokeball#normal {
+        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #e20f07, 20px 4px 0 #e20f07, 24px 4px 0 #e20f07, 28px 4px 0 #e20f07, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #e20f07, 12px 8px 0 #e20f07, 16px 8px 0 #FFF, 20px 8px 0 #e20f07, 24px 8px 0 #e20f07, 28px 8px 0 #e20f07, 32px 8px 0 #e20f07, 36px 8px 0 #e20f07, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #e20f07, 12px 12px 0 #FFF, 16px 12px 0 #FFF, 20px 12px 0 #FFF, 24px 12px 0 #e20f07, 28px 12px 0 #e20f07, 32px 12px 0 #e20f07, 36px 12px 0 #e20f07, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #e20f07, 8px 16px 0 #e20f07, 12px 16px 0 #e20f07, 16px 16px 0 #FFF, 20px 16px 0 #e20f07, 24px 16px 0 #e20f07, 28px 16px 0 #e20f07, 32px 16px 0 #e20f07, 36px 16px 0 #e20f07, 40px 16px 0 #e20f07, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #e20f07, 8px 20px 0 #e20f07, 12px 20px 0 #e20f07, 16px 20px 0 #e20f07, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #e20f07, 32px 20px 0 #e20f07, 36px 20px 0 #e20f07, 40px 20px 0 #e20f07, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #e20f07, 12px 24px 0 #e20f07, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #e20f07, 36px 24px 0 #e20f07, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
+    }
+    .pokeball#great {
+        animation-delay: 0.25s;
+        margin: -4px 0 0 54px;
+        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #278de1, 20px 4px 0 #278de1, 24px 4px 0 #278de1, 28px 4px 0 #278de1, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #e20f07, 12px 8px 0 #e20f07, 16px 8px 0 #278de1, 20px 8px 0 #278de1, 24px 8px 0 #278de1, 28px 8px 0 #278de1, 32px 8px 0 #e20f07, 36px 8px 0 #e20f07, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #e20f07, 12px 12px 0 #e20f07, 16px 12px 0 #e20f07, 20px 12px 0 #278de1, 24px 12px 0 #278de1, 28px 12px 0 #e20f07, 32px 12px 0 #e20f07, 36px 12px 0 #e20f07, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #278de1, 8px 16px 0 #278de1, 12px 16px 0 #e20f07, 16px 16px 0 #e20f07, 20px 16px 0 #278de1, 24px 16px 0 #278de1, 28px 16px 0 #e20f07, 32px 16px 0 #e20f07, 36px 16px 0 #278de1, 40px 16px 0 #278de1, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #278de1, 8px 20px 0 #278de1, 12px 20px 0 #278de1, 16px 20px 0 #278de1, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #278de1, 32px 20px 0 #278de1, 36px 20px 0 #278de1, 40px 20px 0 #278de1, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #278de1, 12px 24px 0 #278de1, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #278de1, 36px 24px 0 #278de1, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
+    }
+    .pokeball#ultra {
+        animation-delay: 0.5s;
+        margin: -4px 0 0 108px;
+        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #ffff00, 20px 4px 0 #ffff00, 24px 4px 0 #ffff00, 28px 4px 0 #ffff00, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #ffff00, 12px 8px 0 #ffff00, 16px 8px 0 #ffff00, 20px 8px 0 #ffff00, 24px 8px 0 #ffff00, 28px 8px 0 #ffff00, 32px 8px 0 #ffff00, 36px 8px 0 #ffff00, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #ffff00, 12px 12px 0 #ffff00, 16px 12px 0 #000, 20px 12px 0 #000, 24px 12px 0 #000, 28px 12px 0 #000, 32px 12px 0 #ffff00, 36px 12px 0 #ffff00, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #000, 8px 16px 0 #ffff00, 12px 16px 0 #ffff00, 16px 16px 0 #000, 20px 16px 0 #000, 24px 16px 0 #000, 28px 16px 0 #000, 32px 16px 0 #ffff00, 36px 16px 0 #ffff00, 40px 16px 0 #000, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #000, 8px 20px 0 #000, 12px 20px 0 #000, 16px 20px 0 #000, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #000, 32px 20px 0 #000, 36px 20px 0 #000, 40px 20px 0 #000, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #000, 12px 24px 0 #000, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #000, 36px 24px 0 #000, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
+    }
+    .pokeball#master {
+        animation-delay: 0.75s;
+        margin: -4px 0 0 162px;
+        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #481a66, 20px 4px 0 #481a66, 24px 4px 0 #481a66, 28px 4px 0 #481a66, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #eb23aa, 12px 8px 0 #eb23aa, 16px 8px 0 #481a66, 20px 8px 0 #481a66, 24px 8px 0 #481a66, 28px 8px 0 #481a66, 32px 8px 0 #eb23aa, 36px 8px 0 #eb23aa, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #eb23aa, 12px 12px 0 #FFF, 16px 12px 0 #FFF, 20px 12px 0 #481a66, 24px 12px 0 #481a66, 28px 12px 0 #FFF, 32px 12px 0 #FFF, 36px 12px 0 #eb23aa, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #481a66, 8px 16px 0 #481a66, 12px 16px 0 #FFF, 16px 16px 0 #481a66, 20px 16px 0 #FFF, 24px 16px 0 #FFF, 28px 16px 0 #481a66, 32px 16px 0 #FFF, 36px 16px 0 #481a66, 40px 16px 0 #481a66, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #481a66, 8px 20px 0 #481a66, 12px 20px 0 #481a66, 16px 20px 0 #481a66, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #481a66, 32px 20px 0 #481a66, 36px 20px 0 #481a66, 40px 20px 0 #481a66, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #481a66, 12px 24px 0 #481a66, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #481a66, 36px 24px 0 #481a66, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
+    }
+    .pokeball#safari {
+        animation-delay: 1s;
+        margin: -4px 0 0 216px;
+        box-shadow: 16px 0 0 #000, 20px 0 0 #000, 24px 0 0 #000, 28px 0 0 #000, 8px 4px 0 #000, 12px 4px 0 #000, 16px 4px 0 #9a4a01, 20px 4px 0 #9a4a01, 24px 4px 0 #606700, 28px 4px 0 #5fa300, 32px 4px 0 #000, 36px 4px 0 #000, 4px 8px 0 #000, 8px 8px 0 #606700, 12px 8px 0 #606700, 16px 8px 0 #606700, 20px 8px 0 #9a4a01, 24px 8px 0 #9a4a01, 28px 8px 0 #5fa300, 32px 8px 0 #606700, 36px 8px 0 #9a4a01, 40px 8px 0 #000, 4px 12px 0 #000, 8px 12px 0 #9a4a01, 12px 12px 0 #9a4a01, 16px 12px 0 #9a4a01, 20px 12px 0 #9a4a01, 24px 12px 0 #9a4a01, 28px 12px 0 #5fa300, 32px 12px 0 #606700, 36px 12px 0 #606700, 40px 12px 0 #000, 0px 16px 0 #000, 4px 16px 0 #5fa300, 8px 16px 0 #606700, 12px 16px 0 #5fa300, 16px 16px 0 #5fa300, 20px 16px 0 #606700, 24px 16px 0 #606700, 28px 16px 0 #606700, 32px 16px 0 #5fa300, 36px 16px 0 #9a4a01, 40px 16px 0 #9a4a01, 44px 16px 0 #000, 0px 20px 0 #000, 4px 20px 0 #5fa300, 8px 20px 0 #606700, 12px 20px 0 #5fa300, 16px 20px 0 #606700, 20px 20px 0 #000, 24px 20px 0 #000, 28px 20px 0 #606700, 32px 20px 0 #606700, 36px 20px 0 #5fa300, 40px 20px 0 #5fa300, 44px 20px 0 #000, 0px 24px 0 #000, 4px 24px 0 #000, 8px 24px 0 #606700, 12px 24px 0 #606700, 16px 24px 0 #000, 20px 24px 0 #FFF, 24px 24px 0 #a5a5a5, 28px 24px 0 #000, 32px 24px 0 #9a4a01, 36px 24px 0 #9a4a01, 40px 24px 0 #000, 44px 24px 0 #000, 0px 28px 0 #000, 4px 28px 0 #FFF, 8px 28px 0 #000, 12px 28px 0 #000, 16px 28px 0 #000, 20px 28px 0 #a5a5a5, 24px 28px 0 #a5a5a5, 28px 28px 0 #000, 32px 28px 0 #000, 36px 28px 0 #000, 40px 28px 0 #a5a5a5, 44px 28px 0 #000, 4px 32px 0 #000, 8px 32px 0 #FFF, 12px 32px 0 #FFF, 16px 32px 0 #FFF, 20px 32px 0 #000, 24px 32px 0 #000, 28px 32px 0 #a5a5a5, 32px 32px 0 #a5a5a5, 36px 32px 0 #a5a5a5, 40px 32px 0 #000, 4px 36px 0 #000, 8px 36px 0 #a5a5a5, 12px 36px 0 #FFF, 16px 36px 0 #FFF, 20px 36px 0 #FFF, 24px 36px 0 #a5a5a5, 28px 36px 0 #a5a5a5, 32px 36px 0 #a5a5a5, 36px 36px 0 #a5a5a5, 40px 36px 0 #000, 8px 40px 0 #000, 12px 40px 0 #000, 16px 40px 0 #a5a5a5, 20px 40px 0 #a5a5a5, 24px 40px 0 #a5a5a5, 28px 40px 0 #a5a5a5, 32px 40px 0 #000, 36px 40px 0 #000, 16px 44px 0 #000, 20px 44px 0 #000, 24px 44px 0 #000, 28px 44px 0 #000;
+    }
 </style>

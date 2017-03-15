@@ -10,7 +10,7 @@
 </template>
 
 <script>
-    const link = "http://www.pokestadium.com/sprites/xy/";
+    const link = "https://www.pkparaiso.com/imagenes/xy/sprites/animados/";
     const linkSpecialPikachu = "http://www.pokestadium.com/sprites/xy-fan/";
 
     export default{
