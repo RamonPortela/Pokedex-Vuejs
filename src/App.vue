@@ -2,11 +2,11 @@
   <div id="app">
       <div class="container">
           <keep-alive>
-              <transition name="trocar" mode="out-in">
+              <!--<transition name="trocar" mode="out-in">-->
                   <component :is="paginaAtual" :poke="pokemonSelecionado" @selecionarPokemon="selecionarPokemon($event)" @voltar="voltar">
 
                   </component>
-              </transition>
+              <!--</transition>-->
           </keep-alive>
       </div>
   </div>
@@ -112,10 +112,6 @@ a {
 body{
   background: #f1f1f1;
 }
-.pesquisa{
-  margin-bottom: 20px;
-}
-
 
     @keyframes rotateBall {
         0% {

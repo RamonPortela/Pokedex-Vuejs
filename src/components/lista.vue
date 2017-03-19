@@ -1,12 +1,12 @@
 <template>
-    <div style="position: absolute">
+    <div>
         <div class="pesquisa row ">
-            <div class="col-sm-4 col-sm-offset-4">
+            <div class="col-sm-3 col-sm-offset-3">
                 <input class="form-control" type="text" placeholder="pesquise um pokemon" v-model="pesquisa">
             </div>
         </div>
 
-        <div id="loading" v-if="carregando">
+        <div class="div-pokebolas" id="loading" v-if="carregando">
             <div class="pokeball" id="normal"></div>
             <div class="pokeball" id="great"></div>
             <div class="pokeball" id="ultra"></div>
@@ -28,7 +28,6 @@
 </template>
 
 <script>
-    let axios = require('axios');
     import pokemonCard from './card.vue';
 
     export default{
@@ -204,73 +203,45 @@
             }
 
             if(this.pokemons.length == 0){
-                axios.get('http://pokeapi.co/api/v2/pokemon/?limit=900').then(
-                    function(response){
-                        for(let pokemon of response.data.results){
-                            pokemon.id = getId(pokemon.url);
-                            app.pokemons.push(pokemon);
-                            app.carregando = false;
-                        }
+
+                this.$http.get('pokemon/?limit=900').then(response => {
+                    for(let pokemon of response.data.results){
+                        pokemon.id = getId(pokemon.url);
+                        app.pokemons.push(pokemon);
+                        app.carregando = false;
                     }
-                );
+                });
 
                 this.pronto = false;
 
-
-                axios.get('http://pokeapi.co/api/v2/type').then(
-                    function (response) {
-                        for(let type of response.data.results){
-                            axios.get(type.url).then(
-                                function(resp){
-                                    app.tipos[resp.data.name] = resp.data;
-                                    app.pronto = true;
-                                }
-                            );
-                        }
+                this.$http.get('type').then(response =>{
+                    for(let type of response.data.results){
+                       this.$http.get('type/'+type.name).then(
+                            function(resp){
+                                app.tipos[resp.data.name] = resp.data;
+                                app.pronto = true;
+                            }
+                        );
                     }
-                );
+                })
             }
         },
-        created(){
-            let app = this;
-            console.log('teste');
-            this.carregando = true;
-
-            function getId(url){
-                let id;
-                url = url.replace("https", "http")
-                id = url.substring(33);
-                id = id.substring(0, id.length - 1);
-                return parseInt(id);
-            }
-
-            if(this.pokemons.length == 0){
-                axios.get('http://pokeapi.co/api/v2/pokemon/?limit=900').then(
-                    function(response){
-                        for(let pokemon of response.data.results){
-                            pokemon.id = getId(pokemon.url);
-                            app.pokemons.push(pokemon);
-                            app.carregando = false;
-                        }
-                    }
-                );
-
-                this.pronto = false;
-
-
-                axios.get('http://pokeapi.co/api/v2/type').then(
-                    function (response) {
-                        for(let type of response.data.results){
-                            axios.get(type.url).then(
-                                function(resp){
-                                    app.tipos[resp.data.name] = resp.data;
-                                    app.pronto = true;
-                                }
-                            );
-                        }
-                    }
-                );
-            }
-        }
     }
 </script>
+
+<style scoped>
+    .pesquisa{
+        margin-bottom: 20px;
+        position: fixed;
+        top: 0px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        z-index: 1;
+        background-color: rgba(255, 255, 255, 0.95);
+        width: 100%;
+        height: 50px;
+    }
+    .div-pokebolas{
+        top:150px;
+    }
+</style>

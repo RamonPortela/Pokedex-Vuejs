@@ -1,5 +1,5 @@
 <template>
-<div style="position: absolute">
+<div>
     <div id="loading" v-if="carregando">
         <div class="pokeball" id="normal"></div>
         <div class="pokeball" id="great"></div>
@@ -104,7 +104,7 @@
 
 </template>
 <script>
-    let axios = require('axios');
+    const POSICAO_ID_ENCOUTER = 6;
 
     export default{
         data(){
@@ -201,31 +201,28 @@
                 this.carregando = true;
                 this.carregandoEvolucoes = true;
 
-                axios.get(this.poke.url).then(
-                    function(response){
-                        component.pokemon = response.data;
-                        component.pokemon.evolucoes = [];
-                        component.carregandoLocal = true;
+                this.$http.get('pokemon/'+this.poke.id).then(response => {
+                    component.pokemon = response.data;
+                    component.pokemon.evolucoes = [];
+                    component.carregandoLocal = true;
 
-                        axios.get('http://pokeapi.co/'+component.pokemon.location_area_encounters).then(function (resp) {
-                            component.encontrado = resp.data;
-                            component.carregandoLocal = false;
+                    this.$http.get('pokemon-species/'+component.pokemon.id).then(resp => {
+                        component.pokemon.especie = resp.data;
+
+                        this.$http.get('evolution-chain/'+component.pokemon.especie.evolution_chain.url.split('/')[POSICAO_ID_ENCOUTER]).then(r =>{
+                            component.pokemon.detalhes_evolucao = r.data;
+                            component.pokemon.evolucoes = [];
+                            component.PreencherEvolucoes(component.pokemon.detalhes_evolucao.chain);
                         });
+                    });
 
-                        axios.get('http://pokeapi.co/api/v2/pokemon-species/' + component.pokemon.id).then(function(resp){
-                            component.pokemon.especie = resp.data;
+                    this.$http.get('pokemon/'+component.poke.id+'/encounters').then(resp =>{
+                        component.encontrado = resp.data;
+                        component.carregandoLocal = false;
+                    });
+                    component.carregando = false;
 
-                            axios.get(component.pokemon.especie.evolution_chain.url).then(function(r){
-                                component.pokemon.detalhes_evolucao = r.data;
-                                component.pokemon.evolucoes = [];
-                                component.PreencherEvolucoes(component.pokemon.detalhes_evolucao.chain);
-                            });
-
-                        });
-
-                        component.carregando = false;
-                    }
-                )
+                });
             }
         }
     }
