@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="pesquisa row ">
-            <div class="col-sm-3 col-sm-offset-3">
+        <div class="pesquisa navbar navbar-fixed-top ">
+            <div class="navbar-form">
                 <input class="form-control" type="text" placeholder="pesquise um pokemon" v-model="pesquisa">
             </div>
         </div>
@@ -17,8 +17,9 @@
 
         <div class="row" v-else>
             <pokemon-card v-for="pokemon in listaFiltrada" :key="pokemon.id"
-                          :poke="pokemon" @click.native="selecionarPokemon(pokemon)"
+                          :poke="pokemon" @click.native="detalharPokemon(pokemon)"
             ></pokemon-card>
+
             <div v-if="listaFiltrada.length == 0">
                 <h4>Nenhum pokemon encontrado.</h4>
             </div>
@@ -43,8 +44,8 @@
             'pokemon-card': pokemonCard
         },
         methods:{
-            selecionarPokemon(pokemon){
-                this.$emit('selecionarPokemon', pokemon);
+            detalharPokemon(pokemon){
+                this.$router.push({name: 'detalhes', params: {id: pokemon.id}})
             }
         },
         computed:{
@@ -231,15 +232,7 @@
 
 <style scoped>
     .pesquisa{
-        margin-bottom: 20px;
-        position: fixed;
-        top: 0px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        z-index: 1;
         background-color: rgba(255, 255, 255, 0.95);
-        width: 100%;
-        height: 50px;
     }
     .div-pokebolas{
         top:150px;

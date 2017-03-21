@@ -14,7 +14,7 @@
             <div class="col-md-4 col-xs-12">
                 <div class="pokemon-detalhes">
                     <h1>#{{pokemon.id}} - {{pokemon.name | FiltroNome}}</h1>
-                    <img :src="poke.imgLink" :alt="pokemon.name">
+                    <img :src="link+pokemon.name+'.gif'" :alt="pokemon.name">
                 </div>
 
                 <div class="div-tipo" :class="type.type.name" v-for="type in pokemon.types" v-if="type.type != null">
@@ -86,11 +86,10 @@
                     <table v-else>
                         <th class="td-nome">Evolução</th>
                         <th class="td-valor">Level</th>
-
-                        <tr v-for="evolucao of pokemon.evolucoes" @click="">
+                        <router-link v-for="evolucao of pokemon.evolucoes" :key="evolucao.nome" :to="{name: 'detalhes', params: {id: evolucao.id}}" tag="tr"  active-class="active" exact>
                             <td class="td-nome"><img :src="link+evolucao.nome+'.gif'" alt=""><br>{{evolucao.nome}}</td>
                             <td class="td-valor">{{evolucao.level}}</td>
-                        </tr>
+                        </router-link>
                     </table>
                 </div>
             </div>
@@ -117,15 +116,10 @@
                 link: "https://www.pkparaiso.com/imagenes/xy/sprites/animados/"
             }
         },
-        props:{
-            poke: {
-                type: Object,
-            }
-        },
+        props:["id"],
         methods:{
             voltar(){
-                this.$emit("voltar");
-                this.$destroy();
+                this.$router.push({name: 'lista'})
             },
             PreencherEvolucoes(evolucao){
 
@@ -138,13 +132,55 @@
                     nivel = "Inicial";
                 }
 
-                this.pokemon.evolucoes.push({nome: evolucao.species.name, level: nivel});
+                let id = evolucao.species.url.split("/")[6];
+
+                this.pokemon.evolucoes.push({nome: evolucao.species.name, level: nivel, id: id});
                 if(evolucao.evolves_to.length > 0){
                     let evol = evolucao.evolves_to[0];
                     this.PreencherEvolucoes(evol);
                 }
                 this.carregandoEvolucoes = false;
+            },
+            fetchData(){
+                if(this.id == null){
+                    this.pokemon = null;
+                }
+                else{
+                    let component = this;
+
+                    this.carregando = true;
+                    this.carregandoEvolucoes = true;
+
+                    this.$http.get('pokemon/'+this.id).then(response => {
+                        component.pokemon = response.data;
+                        component.pokemon.evolucoes = [];
+                        component.carregandoLocal = true;
+
+                        this.$http.get('pokemon-species/'+component.pokemon.id).then(resp => {
+                            component.pokemon.especie = resp.data;
+
+                            this.$http.get('evolution-chain/'+component.pokemon.especie.evolution_chain.url.split('/')[POSICAO_ID_ENCOUTER]).then(r =>{
+                                component.pokemon.detalhes_evolucao = r.data;
+                                component.pokemon.evolucoes = [];
+                                component.PreencherEvolucoes(component.pokemon.detalhes_evolucao.chain);
+                            });
+                        });
+
+                        this.$http.get('pokemon/'+component.id+'/encounters').then(resp =>{
+                            component.encontrado = resp.data;
+                            component.carregandoLocal = false;
+                        });
+                        component.carregando = false;
+
+                    });
+                }
             }
+        },
+        created(){
+            this.fetchData();
+        },
+        watch:{
+            '$route': 'fetchData'
         },
 
         computed:{
@@ -189,41 +225,6 @@
           peso(){
               return (this.pokemon.weight / 10) + "kg";
           }
-        },
-
-        created(){
-            if(this.poke == null){
-                this.pokemon = null;
-            }
-            else{
-                let component = this;
-
-                this.carregando = true;
-                this.carregandoEvolucoes = true;
-
-                this.$http.get('pokemon/'+this.poke.id).then(response => {
-                    component.pokemon = response.data;
-                    component.pokemon.evolucoes = [];
-                    component.carregandoLocal = true;
-
-                    this.$http.get('pokemon-species/'+component.pokemon.id).then(resp => {
-                        component.pokemon.especie = resp.data;
-
-                        this.$http.get('evolution-chain/'+component.pokemon.especie.evolution_chain.url.split('/')[POSICAO_ID_ENCOUTER]).then(r =>{
-                            component.pokemon.detalhes_evolucao = r.data;
-                            component.pokemon.evolucoes = [];
-                            component.PreencherEvolucoes(component.pokemon.detalhes_evolucao.chain);
-                        });
-                    });
-
-                    this.$http.get('pokemon/'+component.poke.id+'/encounters').then(resp =>{
-                        component.encontrado = resp.data;
-                        component.carregandoLocal = false;
-                    });
-                    component.carregando = false;
-
-                });
-            }
         }
     }
 </script>
@@ -307,6 +308,10 @@
 
     .div-informacoes{
         margin-top: 10px;
+    }
+
+    .active{
+        background-color: beige;
     }
 
     .fire{

@@ -1,13 +1,7 @@
 <template>
   <div id="app">
       <div class="container">
-          <keep-alive>
-              <!--<transition name="trocar" mode="out-in">-->
-                  <component :is="paginaAtual" :poke="pokemonSelecionado" @selecionarPokemon="selecionarPokemon($event)" @voltar="voltar">
-
-                  </component>
-              <!--</transition>-->
-          </keep-alive>
+          <router-view></router-view>
       </div>
   </div>
 </template>
