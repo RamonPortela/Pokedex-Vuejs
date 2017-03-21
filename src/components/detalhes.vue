@@ -86,7 +86,7 @@
                     <table v-else>
                         <th class="td-nome">Evolução</th>
                         <th class="td-valor">Level</th>
-                        <router-link v-for="evolucao of pokemon.evolucoes" :key="evolucao.nome" :to="{name: 'detalhes', params: {id: evolucao.id}}" tag="tr"  active-class="active" exact>
+                        <router-link class="seletor-pokemon" v-for="evolucao of pokemon.evolucoes" :key="evolucao.nome" :to="{name: 'detalhes', params: {id: evolucao.id}}" tag="tr"  active-class="active" exact>
                             <td class="td-nome"><img :src="link+evolucao.nome+'.gif'" alt=""><br>{{evolucao.nome}}</td>
                             <td class="td-valor">{{evolucao.level}}</td>
                         </router-link>
@@ -241,11 +241,7 @@
     tr{
         border-bottom: 1px solid #adc2bf;
         border-top: 1px solid #adc2bf;
-        cursor: pointer;
-    }
 
-    tr:hover{
-        background-color: azure;
     }
 
     th{
@@ -313,6 +309,14 @@
 
     .div-informacoes{
         margin-top: 10px;
+    }
+
+    .seletor-pokemon{
+        cursor: pointer;
+    }
+
+    .seletor-pokemon:hover{
+        background-color: azure;
     }
 
     .active{
