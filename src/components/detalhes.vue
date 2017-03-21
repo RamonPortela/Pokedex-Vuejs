@@ -241,6 +241,11 @@
     tr{
         border-bottom: 1px solid #adc2bf;
         border-top: 1px solid #adc2bf;
+        cursor: pointer;
+    }
+
+    tr:hover{
+        background-color: azure;
     }
 
     th{

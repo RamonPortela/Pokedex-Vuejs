@@ -55,6 +55,7 @@
                     case "bug":
                     case "inseto":
                         for(let pokemon of this.tipos.bug.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -62,6 +63,7 @@
                     case "fire":
                     case "fogo":
                         for(let pokemon of this.tipos.fire.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -70,12 +72,14 @@
                     case "agua":
                     case "água":
                         for(let pokemon of this.tipos.water.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
                         break;
                     case "normal":
                         for(let pokemon of this.tipos.normal.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -83,6 +87,7 @@
                     case "fighting":
                     case "lutador":
                         for(let pokemon of this.tipos.fighting.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -90,6 +95,7 @@
                     case "grass":
                     case "planta":
                         for(let pokemon of this.tipos.grass.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -97,6 +103,7 @@
                     case "poison":
                     case "venenoso":
                         for(let pokemon of this.tipos.poison.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -105,6 +112,7 @@
                     case "elétrico":
                     case "eletrico":
                         for(let pokemon of this.tipos.electric.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -112,6 +120,7 @@
                     case "ground":
                     case "terra":
                         for(let pokemon of this.tipos.ground.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -120,6 +129,7 @@
                     case "psíquico":
                     case "psiquico":
                         for(let pokemon of this.tipos.psychic.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -127,6 +137,7 @@
                     case "rock":
                     case "pedra":
                         for(let pokemon of this.tipos.rock.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -134,6 +145,7 @@
                     case "flying":
                     case "voador":
                         for(let pokemon of this.tipos.flying.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -141,6 +153,7 @@
                     case "ghost":
                     case "fantasma":
                         for(let pokemon of this.tipos.ghost.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -148,6 +161,7 @@
                     case "ice":
                     case "gelo":
                         for(let pokemon of this.tipos.ice.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -156,6 +170,7 @@
                     case "dragão":
                     case "dragao":
                         for(let pokemon of this.tipos.dragon.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -164,6 +179,7 @@
                     case "metálico":
                     case "metalico":
                         for(let pokemon of this.tipos.steel.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -171,6 +187,7 @@
                     case "dark":
                     case "noturno":
                         for(let pokemon of this.tipos.dark.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -178,6 +195,7 @@
                     case "fairy":
                     case "fada":
                         for(let pokemon of this.tipos.fairy.pokemon){
+                            pokemon.pokemon.id = pokemon.pokemon.url.split("/")[6];
                             retorno.push(pokemon.pokemon);
                         }
                         return retorno;
@@ -197,8 +215,7 @@
 
             function getId(url){
                 let id;
-                url = url.replace("https", "http")
-                id = url.substring(33);
+                id = url.substring(34);
                 id = id.substring(0, id.length - 1);
                 return parseInt(id);
             }

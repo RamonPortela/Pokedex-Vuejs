@@ -15,11 +15,10 @@ Vue.filter('FiltroNome', function(value){
 Vue.use(VueResource);
 Vue.use(VueRouter);
 
-Vue.http.options.root = "http://pokeapi.co/api/v2";
+Vue.http.options.root = "https://pokeapi.co/api/v2";
 
 const router = new VueRouter({
-   routes,
-    canReuse: false
+   routes
 });
 
 new Vue({
