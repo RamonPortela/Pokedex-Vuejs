@@ -7,30 +7,20 @@
 </template>
 
 <script>
-import lista from './components/lista.vue';
-import detalhes from './components/detalhes.vue';
-
 export default {
   name: 'app',
   data () {
     return {
       pokemonSelecionado: null,
       pronto: false,
-      paginaAtual: 'lista'
     }
-  },
-  components: {
-    'lista': lista,
-    'detalhes': detalhes
   },
   methods:{
       selecionarPokemon(pokemon){
         this.pokemonSelecionado = pokemon;
-        this.paginaAtual = 'detalhes';
       },
       voltar(){
           this.pokemonSelecionado = null;
-          this.paginaAtual = 'lista';
       }
   },
   computed:{
@@ -45,11 +35,13 @@ export default {
 </script>
 
 <style>
-    .trocar-enter{
-        animation: slide-in 2s;
-    }
-    .trocar-leave-to{
-        animation: slide-out 2s;
+    .holder{
+        background: white;
+        padding: 15px;
+        border-radius: 15px;
+        margin: auto;
+        border: 1px solid black;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
     }
 
     @keyframes slide-in{
@@ -125,6 +117,79 @@ body{
         0% {
             transform: rotate(360deg);
         }
+    }
+
+    .div-tipo{
+        border-radius: 30px;
+        width: 93px;
+        padding: 2px;
+        color: white;
+        font-weight: 600;
+        background-clip: border-box;
+        box-shadow: 1px 1px 1px black;
+        display: inline-block;
+        margin-left: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .active{
+        background-color: beige;
+    }
+
+    .fire{
+        background-color: #f95343;
+    }
+    .normal{
+        background-color: #BCBCAF;
+    }
+    .poison{
+        background-color: #AB5EA2;
+    }
+    .psychic{
+        background-color: #fa5489;
+    }
+    .grass{
+        background-color: #8CD751;
+    }
+    .ground{
+        background-color: #EDCB56;
+    }
+    .ice{
+        background-color: #96F1FF;
+    }
+    .rock{
+        background-color: #CDBD72;
+    }
+    .dragon{
+        background-color: #993aff;
+    }
+    .water{
+        background-color: #56AEFF;
+    }
+    .bug{
+        background-color: #C3D21F;
+    }
+    .dark{
+        background-color: #8F6956;
+    }
+    .fighting{
+        background-color: #A85645;
+    }
+    .ghost{
+        background-color: #7874D6;
+    }
+    .steel{
+        background-color: #C3C2D8;
+    }
+    .flying{
+        background-color: #79A4FF;
+    }
+    .electric{
+        background-color: #FDE53C;
+    }
+    .fairy{
+        background-color: #ffb0c5;
     }
 
     .div-carregando{

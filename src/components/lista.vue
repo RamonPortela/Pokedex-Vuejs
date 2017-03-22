@@ -16,9 +16,16 @@
         </div>
 
         <div class="row" v-else>
-            <pokemon-card v-for="pokemon in listaFiltrada" :key="pokemon.id"
-                          :poke="pokemon" @click.native="detalharPokemon(pokemon)"
-            ></pokemon-card>
+            <transition-group
+                    name="staggered-fade"
+                    v-on:before-enter="beforeEnter"
+                    v-on:enter="enter"
+                    v-on:leave="leave"
+            >
+                <pokemon-card v-for="pokemon in listaFiltrada" :key="pokemon.id"
+                              :poke="pokemon" @click.native="detalharPokemon(pokemon)"
+                ></pokemon-card>
+            </transition-group>
 
             <div v-if="listaFiltrada.length == 0">
                 <h4>Nenhum pokemon encontrado.</h4>
@@ -46,6 +53,29 @@
         methods:{
             detalharPokemon(pokemon){
                 this.$router.push({name: 'detalhes', params: {id: pokemon.id}})
+            },
+            beforeEnter: function (el) {
+                el.style.opacity = 0
+            },
+            enter: function (el, done) {
+                let delay = el.dataset.index * 150
+                setTimeout(function () {
+                    Velocity(
+                        el,
+                        { opacity: 1 },
+                        { complete: done }
+                    )
+                }, delay)
+            },
+            leave: function (el, done) {
+                var delay = el.dataset.index * 500
+                setTimeout(function () {
+                    Velocity(
+                        el,
+                        { opacity: 0, height: 0 },
+                        { complete: done }
+                    )
+                }, delay)
             }
         },
         computed:{
@@ -209,8 +239,6 @@
             }
         },
         created(){
-            let app = this;
-
             this.carregando = true;
 
             function getId(url){
@@ -225,8 +253,8 @@
                 this.$http.get('pokemon/?limit=900').then(response => {
                     for(let pokemon of response.data.results){
                         pokemon.id = getId(pokemon.url);
-                        app.pokemons.push(pokemon);
-                        app.carregando = false;
+                        this.pokemons.push(pokemon);
+                        this.carregando = false;
                     }
                 });
 
@@ -236,8 +264,8 @@
                     for(let type of response.data.results){
                        this.$http.get('type/'+type.name).then(
                             function(resp){
-                                app.tipos[resp.data.name] = resp.data;
-                                app.pronto = true;
+                                this.tipos[resp.data.name] = resp.data;
+                                this.pronto = true;
                             }
                         );
                     }

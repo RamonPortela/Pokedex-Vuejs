@@ -17,9 +17,10 @@
                     <img :src="link+pokemon.name+'.gif'" :alt="pokemon.name">
                 </div>
 
-                <div class="div-tipo" :class="type.type.name" v-for="type in pokemon.types" v-if="type.type != null">
+<!--                <div class="div-tipo" :class="type.type.name" v-for="type in pokemon.types" v-if="type.type != null">
                     {{type.type.name}}
-                </div>
+                </div>-->
+                <router-link v-for="(type, index) in pokemon.types" class="div-tipo" :class="type.type.name" v-if="type.type != null" tag="div" :to="{ name: 'tipo', params: {id: pokemon.tipos[index]}}" :key="type.type.name">{{ type.type.name }}</router-link>
             </div>
 
             <div class="col-md-8 col-xs-12">
@@ -146,31 +147,34 @@
                     this.pokemon = null;
                 }
                 else{
-                    let component = this;
 
                     this.carregando = true;
                     this.carregandoEvolucoes = true;
 
                     this.$http.get('pokemon/'+this.id).then(response => {
-                        component.pokemon = response.data;
-                        component.pokemon.evolucoes = [];
-                        component.carregandoLocal = true;
+                        this.pokemon = response.data;
+                        this.pokemon.tipos = [];
+                        for(let tipo of this.pokemon.types){
+                            this.pokemon.tipos.push(tipo.type.url.split("/")[6]);
+                        }
+                        this.pokemon.evolucoes = [];
+                        this.carregandoLocal = true;
 
-                        this.$http.get('pokemon-species/'+component.pokemon.id).then(resp => {
-                            component.pokemon.especie = resp.data;
+                        this.$http.get('pokemon-species/'+this.pokemon.id).then(resp => {
+                            this.pokemon.especie = resp.data;
 
-                            this.$http.get('evolution-chain/'+component.pokemon.especie.evolution_chain.url.split('/')[POSICAO_ID_ENCOUTER]).then(r =>{
-                                component.pokemon.detalhes_evolucao = r.data;
-                                component.pokemon.evolucoes = [];
-                                component.PreencherEvolucoes(component.pokemon.detalhes_evolucao.chain);
+                            this.$http.get('evolution-chain/'+this.pokemon.especie.evolution_chain.url.split('/')[POSICAO_ID_ENCOUTER]).then(r =>{
+                                this.pokemon.detalhes_evolucao = r.data;
+                                this.pokemon.evolucoes = [];
+                                this.PreencherEvolucoes(this.pokemon.detalhes_evolucao.chain);
                             });
                         });
 
-                        this.$http.get('pokemon/'+component.id+'/encounters').then(resp =>{
-                            component.encontrado = resp.data;
-                            component.carregandoLocal = false;
+                        this.$http.get('pokemon/'+this.id+'/encounters').then(resp =>{
+                            this.encontrado = resp.data;
+                            this.carregandoLocal = false;
                         });
-                        component.carregando = false;
+                        this.carregando = false;
 
                     });
                 }
@@ -263,29 +267,6 @@
         text-align: center;
     }
 
-    .holder{
-        background: white;
-        padding: 15px;
-        border-radius: 15px;
-        margin: auto;
-        border: 1px solid black;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-    }
-
-    .div-tipo{
-        border-radius: 30px;
-        width: 93px;
-        padding: 2px;
-        color: white;
-        font-weight: 600;
-        background-clip: border-box;
-        box-shadow: 1px 1px 1px black;
-        display: inline-block;
-        margin-left: 5px;
-        cursor: default;
-        margin-top: 10px;
-    }
-
     .pokemon-detalhes{
         padding: 10px 0 10px 0
     }
@@ -317,65 +298,6 @@
 
     .seletor-pokemon:hover{
         background-color: azure;
-    }
-
-    .active{
-        background-color: beige;
-    }
-
-    .fire{
-        background-color: #f95343;
-    }
-    .normal{
-        background-color: #BCBCAF;
-    }
-    .poison{
-        background-color: #AB5EA2;
-    }
-    .psychic{
-        background-color: #fa5489;
-    }
-    .grass{
-        background-color: #8CD751;
-    }
-    .ground{
-        background-color: #EDCB56;
-    }
-    .ice{
-        background-color: #96F1FF;
-    }
-    .rock{
-        background-color: #CDBD72;
-    }
-    .dragon{
-        background-color: #993aff;
-    }
-    .water{
-        background-color: #56AEFF;
-    }
-    .bug{
-        background-color: #C3D21F;
-    }
-    .dark{
-        background-color: #8F6956;
-    }
-    .fighting{
-        background-color: #A85645;
-    }
-    .ghost{
-        background-color: #7874D6;
-    }
-    .steel{
-        background-color: #C3C2D8;
-    }
-    .flying{
-        background-color: #79A4FF;
-    }
-    .electric{
-        background-color: #FDE53C;
-    }
-    .fairy{
-        background-color: #ffb0c5;
     }
 
     /* Black and white, like the old days */
