@@ -121,7 +121,7 @@ body{
 
     .div-tipo{
         border-radius: 30px;
-        width: 93px;
+        width: 75px;
         padding: 2px;
         color: white;
         font-weight: 600;

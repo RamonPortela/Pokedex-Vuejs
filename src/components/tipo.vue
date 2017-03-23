@@ -4,44 +4,46 @@
 
             <div class="row">
                 <h2>Ataque - Prós e Contras</h2>
-                <div class="row">
-                    <div class="row bom"> Ataques do tipo {{tipo.nome | FiltroTipos }} são super-efetivos contra</div>
-                    <div class="row"><router-link v-for="(type, index) in tipo.efetivoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                <div class="row" v-if="tipo.efetivoContra.length > 0">
+                    <div class="col-xs-12 bom"> Ataques do tipo {{tipo.nome | FiltroTipos }} são super-efetivos contra</div>
+                    <div class="col-xs-12"><router-link v-for="(type, index) in tipo.efetivoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
                 </div>
-                <div class="row">
-                    <div class="row ruim">Ataques do tipo {{tipo.nome | FiltroTipos }} não são efetivos contra</div>
-                    <div class="row"><router-link v-for="(type, index) in tipo.fracoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                <div class="row" v-if="tipo.fracoContra.length > 0">
+                    <div class="col-xs-12 ruim">Ataques do tipo {{tipo.nome | FiltroTipos }} não são efetivos contra</div>
+                    <div class="col-xs-12"><router-link v-for="(type, index) in tipo.fracoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
                 </div>
-                <div class="row">
-                    <div class="row ruim">Ataques do tipo {{tipo.nome | FiltroTipos }} não causam efeitos contra</div>
-                    <div class="row"><router-link v-for="(type, index) in tipo.semEfeitoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                <div class="row" v-if="tipo.semEfeitoContra.length > 0">
+                    <div class="col-xs-12 ruim">Ataques do tipo {{tipo.nome | FiltroTipos }} não causam efeitos contra</div>
+                    <div class="col-xs-12"><router-link v-for="(type, index) in tipo.semEfeitoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
                 </div>
             </div>
 
             <div class="row">
                 <h2>Defesa - Prós e Contras</h2>
-                <div class="row">
-                    <div class="row bom">Estes tipos não causam efeito contra pokemons dos tipo {{tipo.nome | FiltroTipos }}</div>
-                    <div class="row"><router-link v-for="(type, index) in tipo.naoSofreEfeito" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: id}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                <div class="row" v-if="tipo.naoSofreEfeito.length > 0">
+                    <div class="col-xs-12 bom">Estes tipos não causam efeito contra pokemons dos tipo {{tipo.nome | FiltroTipos }}</div>
+                    <div class="col-xs-12"><router-link v-for="(type, index) in tipo.naoSofreEfeito" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: id}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
                 </div>
-                <div class="row">
-                    <div class="row bom">Estes tipos não são efetivos contra pokemons dos tipo {{tipo.nome | FiltroTipos }}</div>
-                    <div class="row"><router-link v-for="(type, index) in tipo.resistenteContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                <div class="row" v-if="tipo.resistenteContra.length > 0">
+                    <div class="col-xs-12 bom">Estes tipos não são efetivos contra pokemons dos tipo {{tipo.nome | FiltroTipos }}</div>
+                    <div class="col-xs-12"><router-link v-for="(type, index) in tipo.resistenteContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
                 </div>
-                <div class="row">
-                    <div class="row ruim">Estes tipos são super-efetivos contra pokemons dos tipo {{tipo.nome | FiltroTipos }}</div>
-                    <div class="row"><router-link v-for="(type, index) in tipo.sofreContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                <div class="row" v-if="tipo.sofreContra.length > 0">
+                    <div class="col-xs-12 ruim">Estes tipos são super-efetivos contra pokemons dos tipo {{tipo.nome | FiltroTipos }}</div>
+                    <div class="col-xs-12"><router-link v-for="(type, index) in tipo.sofreContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
                     <div>
-                        <h2>Pokemons</h2>
+                        <h2>Pokemons Tipo {{tipo.nome | FiltroTipos}}</h2>
                         <table>
-                            <th class="td-nome">Nome</th>
                             <router-link class="seletor-pokemon" v-for="pokemon in tipo.pokemons" :key="pokemon.name" :to="{name: 'detalhes', params: {id: pokemon.pokemon.url.split('/')[6]}}" tag="tr">
-                                <td class="td-nome"><img :src="imgLink+pokemon.pokemon.url.split('/')[6]+'.png'" alt="">{{pokemon.pokemon.name}}</td>
+                                <td class="td-nome">
+                                    <div class="row"><img :src="imgLink+pokemon.pokemon.url.split('/')[6]+'.png'" alt=""></div>
+                                    <div class="row">#{{pokemon.pokemon.url.split('/')[6]}} /{{pokemon.pokemon.name}}</div>
+                                </td>
                             </router-link>
                         </table>
                     </div>
@@ -106,5 +108,11 @@
         display: inline-block;
         color: red;
         padding: 0 6px 0 0;
+    }
+
+    .td-nome{
+        text-align: center;
+        width: 100%;
+        padding-bottom: 15px;
     }
 </style>

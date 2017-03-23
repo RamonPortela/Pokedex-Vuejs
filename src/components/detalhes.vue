@@ -83,10 +83,16 @@
                     <table v-else>
                         <th class="td-nome">Evolução</th>
                         <th class="td-valor">Level</th>
-                        <router-link class="seletor-pokemon" v-for="evolucao of pokemon.evolucoes" :key="evolucao.nome" :to="{name: 'detalhes', params: {id: evolucao.id}}" tag="tr"  active-class="active" exact>
-                            <td class="td-nome"><img :src="link+evolucao.nome+'.gif'" alt=""><br>{{evolucao.nome}}</td>
+                        <router-link class="seletor-pokemon" v-for="evolucao of pokemon.evolucoes" :key="evolucao.nome" :to="{name: 'detalhes', params: {id: evolucao.id}}" tag="tr"  active-class="active" exact v-if="!erroCarregandoEvolucoes">
+                            <td class="td-nome">
+                                <div class="row"><img :src="'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + evolucao.id + '.png'" :alt="evolucao.nome"></div>
+                                <div class="row nome">{{evolucao.nome}}</div>
+                            </td>
                             <td class="td-valor">{{evolucao.level}}</td>
                         </router-link>
+                        <tr v-if="erroCarregandoEvolucoes">
+                            <td colspan="2">Um erro ocorreu. Evoluções não encontradas</td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -110,6 +116,7 @@
                 carregando: false,
                 carregandoLocal: false,
                 carregandoEvolucoes: false,
+                erroCarregandoEvolucoes: false,
                 link: "https://www.pkparaiso.com/imagenes/xy/sprites/animados/"
             }
         },
@@ -146,6 +153,7 @@
 
                     this.carregando = true;
                     this.carregandoEvolucoes = true;
+                    this.carregandoLocal = true;
 
                     this.$http.get('pokemon/'+this.id).then(response => {
                         this.pokemon = response.data;
@@ -153,17 +161,19 @@
                         for(let tipo of this.pokemon.types){
                             this.pokemon.tipos.push(tipo.type.url.split("/")[6]);
                         }
+
                         this.pokemon.evolucoes = [];
-                        this.carregandoLocal = true;
 
                         this.$http.get('pokemon-species/'+this.pokemon.id).then(resp => {
                             this.pokemon.especie = resp.data;
 
                             this.$http.get('evolution-chain/'+this.pokemon.especie.evolution_chain.url.split('/')[POSICAO_ID_ENCOUTER]).then(r =>{
                                 this.pokemon.detalhes_evolucao = r.data;
-                                this.pokemon.evolucoes = [];
                                 this.PreencherEvolucoes(this.pokemon.detalhes_evolucao.chain);
                             });
+                        }).catch(erro => {
+                            this.erroCarregandoEvolucoes = true;
+                            this.carregandoEvolucoes = false;
                         });
 
                         this.$http.get('pokemon/'+this.id+'/encounters').then(resp =>{
@@ -171,7 +181,6 @@
                             this.carregandoLocal = false;
                         });
                         this.carregando = false;
-
                     });
                 }
             }
@@ -261,6 +270,10 @@
 
     .div-informacoes{
         margin-top: 10px;
+    }
+
+    .nome{
+        padding-left: 20px;
     }
 
     /* Black and white, like the old days */
