@@ -16,11 +16,7 @@
                     <h1>#{{pokemon.id}} - {{pokemon.name | FiltroNome}}</h1>
                     <img :src="link+pokemon.name+'.gif'" :alt="pokemon.name">
                 </div>
-
-<!--                <div class="div-tipo" :class="type.type.name" v-for="type in pokemon.types" v-if="type.type != null">
-                    {{type.type.name}}
-                </div>-->
-                <router-link v-for="(type, index) in pokemon.types" class="div-tipo" :class="type.type.name" v-if="type.type != null" tag="div" :to="{ name: 'tipo', params: {id: pokemon.tipos[index]}}" :key="type.type.name">{{ type.type.name }}</router-link>
+                <router-link v-for="(type, index) in pokemon.types" class="div-tipo" :class="type.type.name" v-if="type.type != null" tag="div" :to="{ name: 'tipo', params: {id: pokemon.tipos[index]}}" :key="type.type.name">{{ type.type.name | FiltroTipos}}</router-link>
             </div>
 
             <div class="col-md-8 col-xs-12">
@@ -242,31 +238,6 @@
         width: 255px;
     }
 
-    tr{
-        border-bottom: 1px solid #adc2bf;
-        border-top: 1px solid #adc2bf;
-
-    }
-
-    th{
-        width: 100%
-    }
-
-    table {
-        border-collapse: collapse;
-        margin:auto;
-        width: 100%;
-    }
-
-    .td-nome{
-        width: 65%;
-        text-align: left;
-    }
-
-    .td-valor{
-        text-align: center;
-    }
-
     .pokemon-detalhes{
         padding: 10px 0 10px 0
     }
@@ -290,14 +261,6 @@
 
     .div-informacoes{
         margin-top: 10px;
-    }
-
-    .seletor-pokemon{
-        cursor: pointer;
-    }
-
-    .seletor-pokemon:hover{
-        background-color: azure;
     }
 
     /* Black and white, like the old days */

@@ -68,7 +68,7 @@
                 }, delay)
             },
             leave: function (el, done) {
-                var delay = el.dataset.index * 500
+                var delay = el.dataset.index * 150
                 setTimeout(function () {
                     Velocity(
                         el,

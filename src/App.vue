@@ -133,6 +133,40 @@ body{
         margin-top: 10px;
     }
 
+    tr{
+        border-bottom: 1px solid #adc2bf;
+        border-top: 1px solid #adc2bf;
+
+    }
+
+    th{
+        width: 100%
+    }
+
+    table {
+        border-collapse: collapse;
+        margin:auto;
+        width: 100%;
+    }
+
+    .td-nome{
+        width: 65%;
+        text-align: left;
+    }
+
+    .td-valor{
+        text-align: center;
+    }
+
+
+    .seletor-pokemon{
+        cursor: pointer;
+    }
+
+    .seletor-pokemon:hover{
+        background-color: azure;
+    }
+
     .active{
         background-color: beige;
     }

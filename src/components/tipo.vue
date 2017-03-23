@@ -1,10 +1,53 @@
 <template>
     <div>
         <div class="holder container" v-if="!carregando">
-            <router-link v-for="(type, index) in tipo.efetivoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: id}}" :key="type.name">{{ type.name }}</router-link>
-<!--          <router-link v-for="(type, index) in tipo.fracoContra" class="div-tipo" :class="type.type.name" v-if="type.type != null" tag="div" :to="{ name: 'tipo', params: {id: pokemon.tipos[index]}}" :key="type.type.name">{{ type.type.name }}</router-link>
-            <router-link v-for="(type, index) in tipo.sofreContra" class="div-tipo" :class="type.type.name" v-if="type.type != null" tag="div" :to="{ name: 'tipo', params: {id: pokemon.tipos[index]}}" :key="type.type.name">{{ type.type.name }}</router-link>
-            <router-link v-for="(type, index) in tipo.resistenteContra" class="div-tipo" :class="type.type.name" v-if="type.type != null" tag="div" :to="{ name: 'tipo', params: {id: pokemon.tipos[index]}}" :key="type.type.name">{{ type.type.name }}</router-link>-->
+
+            <div class="row">
+                <h2>Ataque - Prós e Contras</h2>
+                <div class="row">
+                    <div class="row bom"> Ataques do tipo {{tipo.nome | FiltroTipos }} são super-efetivos contra</div>
+                    <div class="row"><router-link v-for="(type, index) in tipo.efetivoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                </div>
+                <div class="row">
+                    <div class="row ruim">Ataques do tipo {{tipo.nome | FiltroTipos }} não são efetivos contra</div>
+                    <div class="row"><router-link v-for="(type, index) in tipo.fracoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                </div>
+                <div class="row">
+                    <div class="row ruim">Ataques do tipo {{tipo.nome | FiltroTipos }} não causam efeitos contra</div>
+                    <div class="row"><router-link v-for="(type, index) in tipo.semEfeitoContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <h2>Defesa - Prós e Contras</h2>
+                <div class="row">
+                    <div class="row bom">Estes tipos não causam efeito contra pokemons dos tipo {{tipo.nome | FiltroTipos }}</div>
+                    <div class="row"><router-link v-for="(type, index) in tipo.naoSofreEfeito" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: id}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                </div>
+                <div class="row">
+                    <div class="row bom">Estes tipos não são efetivos contra pokemons dos tipo {{tipo.nome | FiltroTipos }}</div>
+                    <div class="row"><router-link v-for="(type, index) in tipo.resistenteContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                </div>
+                <div class="row">
+                    <div class="row ruim">Estes tipos são super-efetivos contra pokemons dos tipo {{tipo.nome | FiltroTipos }}</div>
+                    <div class="row"><router-link v-for="(type, index) in tipo.sofreContra" class="div-tipo" :class="type.name" tag="div" :to="{ name: 'tipo', params: {id: type.url.split('/')[6]}}" :key="type.name">{{ type.name | FiltroTipos}}</router-link></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div>
+                        <h2>Pokemons</h2>
+                        <table>
+                            <th class="td-nome">Nome</th>
+                            <router-link class="seletor-pokemon" v-for="pokemon in tipo.pokemons" :key="pokemon.name" :to="{name: 'detalhes', params: {id: pokemon.pokemon.url.split('/')[6]}}" tag="tr">
+                                <td class="td-nome"><img :src="imgLink+pokemon.pokemon.url.split('/')[6]+'.png'" alt="">{{pokemon.pokemon.name}}</td>
+                            </router-link>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
@@ -13,20 +56,26 @@
         data(){
             return{
                 tipo: {},
-                carregando: true
+                carregando: true,
+                imgLink: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'
             }
         },
+        props: ["id"],
         methods:{
             fetchData(){
+                this.carregando = true;
                 this.$http.get('type/' + this.id).then(response => {
                    let type = response.data;
+
                    this.tipo.nome = type.name;
                    this.tipo.pokemons = type.pokemon;
                    this.tipo.efetivoContra = type.damage_relations.double_damage_to;
                    this.tipo.fracoContra = type.damage_relations.half_damage_to;
                    this.tipo.sofreContra = type.damage_relations.double_damage_from;
                    this.tipo.resistenteContra = type.damage_relations.half_damage_from;
-                   console.log(this.tipo.efetivoContra);
+                   this.tipo.semEfeitoContra = type.damage_relations.no_damage_to;
+                   this.tipo.naoSofreEfeito = type.damage_relations.no_damage_from;
+
                    this.carregando = false;
                 });
             }
@@ -34,6 +83,28 @@
         created(){
             this.fetchData();
         },
-        props: ["id"]
+        watch:{
+            '$route': 'fetchData'
+        },
     }
 </script>
+<style scoped>
+    .div-tipo{
+        margin-bottom: 10px !important;
+        margin-top: 10px !important;
+    }
+
+    .bom::before{
+        content: '\2713';
+        display: inline-block;
+        color: green;
+        padding: 0 6px 0 0;
+    }
+
+    .ruim::before{
+        content: 'X';
+        display: inline-block;
+        color: red;
+        padding: 0 6px 0 0;
+    }
+</style>

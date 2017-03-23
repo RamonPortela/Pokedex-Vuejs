@@ -1,6 +1,6 @@
 {
   "name": "pokedex",
-  "description": "A Vue.js project",
+  "description": "Uma pokedex simples feita com vuejs e utilizando a poke api",
   "version": "1.0.0",
   "author": "ramon portela santos",
   "private": true,
