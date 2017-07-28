@@ -66,7 +66,7 @@
         methods:{
             fetchData(){
                 this.carregando = true;
-                this.$http.get('type/' + this.id).then(response => {
+                this.axios.get('type/' + this.id).then(response => {
                    let type = response.data;
 
                    this.tipo.nome = type.name;

@@ -49,7 +49,7 @@
                 <div>
                     <h2>Status</h2>
                     <table>
-                        <tr v-for="status in pokemon.stats">
+                        <tr v-for="status in pokemon.stats" :key="status.stat.name">
                             <td class="td-nome">{{status.stat.name | FiltroNome}}</td>
                             <td class="td-valor">{{status.base_stat}}</td>
                         </tr>
@@ -63,7 +63,7 @@
                     <div id="ash" v-if="carregandoLocal"></div>
 
                     <table v-else>
-                        <tr v-for="local in locais">
+                        <tr v-for="local in locais" :key="local">
                             <td>{{local | FiltroNome}}</td>
                         </tr>
                     </table>
@@ -155,7 +155,7 @@
                     this.carregandoEvolucoes = true;
                     this.carregandoLocal = true;
 
-                    this.$http.get('pokemon/'+this.id).then(response => {
+                    this.axios.get('pokemon/'+this.id).then(response => {
                         this.pokemon = response.data;
                         this.pokemon.tipos = [];
                         for(let tipo of this.pokemon.types){
@@ -164,10 +164,10 @@
 
                         this.pokemon.evolucoes = [];
 
-                        this.$http.get('pokemon-species/'+this.pokemon.id).then(resp => {
+                        this.axios.get('pokemon-species/'+this.pokemon.id).then(resp => {
                             this.pokemon.especie = resp.data;
 
-                            this.$http.get('evolution-chain/'+this.pokemon.especie.evolution_chain.url.split('/')[POSICAO_ID_ENCOUTER]).then(r =>{
+                            this.axios.get('evolution-chain/'+this.pokemon.especie.evolution_chain.url.split('/')[POSICAO_ID_ENCOUTER]).then(r =>{
                                 this.pokemon.detalhes_evolucao = r.data;
                                 this.PreencherEvolucoes(this.pokemon.detalhes_evolucao.chain);
                             });
@@ -176,7 +176,7 @@
                             this.carregandoEvolucoes = false;
                         });
 
-                        this.$http.get('pokemon/'+this.id+'/encounters').then(resp =>{
+                        this.axios.get('pokemon/'+this.id+'/encounters').then(resp =>{
                             this.encontrado = resp.data;
                             this.carregandoLocal = false;
                         });

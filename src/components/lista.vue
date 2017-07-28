@@ -250,7 +250,7 @@
 
             if(this.pokemons.length == 0){
 
-                this.$http.get('pokemon/?limit=900').then(response => {
+                this.axios.get('pokemon/?limit=900').then(response => {
                     for(let pokemon of response.data.results){
                         pokemon.id = getId(pokemon.url);
                         this.pokemons.push(pokemon);
@@ -260,13 +260,13 @@
 
                 this.pronto = false;
 
-                this.$http.get('type').then(response =>{
+                this.axios.get('type').then(response =>{
                     for(let type of response.data.results){
-                       this.$http.get('type/'+type.name).then(
+                       this.axios.get('type/'+type.name).then(
                             function(resp){
                                 this.tipos[resp.data.name] = resp.data;
                                 this.pronto = true;
-                            }
+                            }.bind(this)
                         );
                     }
                 })
